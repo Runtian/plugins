@@ -8,6 +8,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
+import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebStorage;
 import android.webkit.WebViewClient;
@@ -36,6 +37,23 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       Map<String, Object> params,
       final View containerView) {
     webView = new InputAwareWebView(context, containerView);
+    
+    containerView.setOnKeyListener(new View.OnKeyListener() {
+      @Override
+      public boolean onKey(View v, int keyCode, KeyEvent event) {
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+          switch (keyCode) {
+            case KeyEvent.KEYCODE_BACK:
+              if (webView.canGoBack()) {
+                webView.goBack();
+                return true;
+              }
+              break;
+          }
+        }
+        return false;
+      }
+    });
 
     platformThreadHandler = new Handler(context.getMainLooper());
     // Allow local storage.
